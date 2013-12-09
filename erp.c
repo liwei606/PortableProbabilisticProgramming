@@ -32,12 +32,12 @@ double randomC() {
 
 // Generate 0 < x <= 1;
 double randomR() {
-    return (long)(rand() + 1) / ((long)RAND_MAX + 1);
+    return (long double)(rand() + 1) / ((long double)RAND_MAX + 1);
 }
 
 // Generate 0 <= x < 1;
 double randomL() {
-    return (long)rand() / ((long)RAND_MAX + 1);
+    return (long double)rand() / ((long double)RAND_MAX + 1);
 }
 
 int Round(double number) {
@@ -70,7 +70,7 @@ int multinomial(double theta[], int n) {
     double probAccum = 0;
     for(int i = 0; i < k; i++) {
         probAccum += theta[i];
-        if(probAccum >= x) return i; //FIXME: if x=0 returns i=0, but this isn't right if theta[0]==0...
+        if(probAccum >= x) return i; //FIXME: if x = 0 returns i=0, but this isn't right if theta[0] == 0...
     }
     return k;
 }
@@ -108,8 +108,7 @@ double gaussian(double mu, double sigma) {
             x = u - 0.449871;
             y = fabs(v) + 0.386595;
             q = x * x + y * (0.196 * y - 0.25472 * x);
-           }
-        while (q >= 0.27597 && (q > 0.27846 || v * v > -4 * u * u * log(u)));
+        } while (q >= 0.27597 && (q > 0.27846 || v * v > -4 * u * u * log(u)));
         return mu + sigma * v / u;
 }
 
@@ -128,8 +127,7 @@ double gamma(double a, double b) {
             do {
                 x = gaussian(0, 1);
                 v = 1 + c * x;
-               }
-            while (v <= 0);
+            } while (v <= 0);
             v = v * v * v;
             u = randomC();
             if ((u < 1 - 0.331 * x * x * x * x) || (log(u) < 0.5 * x * x + d * (1 - v + log(v)))) 
