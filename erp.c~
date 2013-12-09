@@ -47,6 +47,7 @@ int flipD() {
     return flip(0.5);
 }
 
+
 int flip-log(double p) {
     if (log(randomL()) < p) return 1;
     return 0;
