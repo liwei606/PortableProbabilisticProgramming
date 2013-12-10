@@ -1,22 +1,24 @@
 /*
 
-The xrps include:
-flip
-log-flip	            (A version of flip that takes log-probability parameter, to avoid underflow.)
-multinomial
-uniform 	            (Uniform real number within a range.)
-uniform-discrete        (Uniform integers within a range.)
-gaussian
-gamma
-beta
-binomial
-poisson
-dirichlet
-no-proposals 	(this is the identity function, but tells the inference engine not to make proposals to any erp inside it. use this carefully -- it can save work when there is an erp that is known to be unchangeable, such as (equal? (erp) data), but can make the sampler wrong if used on something that should be sampled.)
+   The xrps include:
+   flip
+   log-flip	            (A version of flip that takes log-probability parameter, to avoid underflow.)
+   multinomial
+   uniform 	            (Uniform real number within a range.)
+   uniform-discrete        (Uniform integers within a range.)
+   gaussian
+   gamma
+   beta
+   binomial
+   poisson
+   dirichlet
+   no-proposals 	(this is the identity function, but tells the inference engine not to make proposals to any erp inside it. use this carefully -- it can save work when there is an erp that is known to be unchangeable, such as (equal? (erp) data), but can make the sampler wrong if used on something that should be sampled.)
 
-*/
+ */
 
 #include "ppp.h"
+#include <math.h>
+
 /************************************** Base Random Functions ******************************************/
 
 // Generate 0 <= x <= 1;
@@ -41,8 +43,8 @@ int Round(float number) {
 /************************************** Flip ******************************************/
 
 float flip(float p) {
-	if (randomL() < p) return 1;
-	return 0;
+    if (randomL() < p) return 1;
+    return 0;
 }
 
 float flipD() {
@@ -96,14 +98,14 @@ float uniformDiscrete(int low, int high) {
 
 float gaussian(float mu, float sigma) {
     float u, v, x, y, q;
-        do {
-            u = 1 - randomC();
-            v = 1.7156 * (randomC() - 0.5);
-            x = u - 0.449871;
-            y = fabs(v) + 0.386595;
-            q = x * x + y * (0.196 * y - 0.25472 * x);
-        } while (q >= 0.27597 && (q > 0.27846 || v * v > -4 * u * u * log(u)));
-        return mu + sigma * v / u;
+    do {
+        u = 1 - randomC();
+        v = 1.7156 * (randomC() - 0.5);
+        x = u - 0.449871;
+        y = fabs(v) + 0.386595;
+        q = x * x + y * (0.196 * y - 0.25472 * x);
+    } while (q >= 0.27597 && (q > 0.27846 || v * v > -4 * u * u * log(u)));
+    return mu + sigma * v / u;
 }
 
 float gaussian_logprob(float x, float mu, float sigma) {
@@ -114,19 +116,19 @@ float gaussian_logprob(float x, float mu, float sigma) {
 
 float gamma(float a, float b) {
     if (a < 1) return gamma(1 + a, b) * pow(randomC(), 1 / a);
-        float x, v, u;
-        float d = a - 1/3;
-        float c = 1 / sqrt(9 * d);
-        while (1) {
-            do {
-                x = gaussian(0, 1);
-                v = 1 + c * x;
-            } while (v <= 0);
-            v = v * v * v;
-            u = randomC();
-            if ((u < 1 - 0.331 * x * x * x * x) || (log(u) < 0.5 * x * x + d * (1 - v + log(v)))) 
-                return b * d * v;
-        }
+    float x, v, u;
+    float d = a - 1/3;
+    float c = 1 / sqrt(9 * d);
+    while (1) {
+        do {
+            x = gaussian(0, 1);
+            v = 1 + c * x;
+        } while (v <= 0);
+        v = v * v * v;
+        u = randomC();
+        if ((u < 1 - 0.331 * x * x * x * x) || (log(u) < 0.5 * x * x + d * (1 - v + log(v))))
+            return b * d * v;
+    }
 }
 
 float gamma_cof[6] = {76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5};
@@ -177,10 +179,10 @@ float binomial(float p, int n) {
 
         float x = beta(a,b);
         if (x >= p) {
-            n = a - 1; 
+            n = a - 1;
             p /= x;
         }
-        else { 
+        else {
             k += a;
             n = b - 1;
             p = (p - x) / (1 - x);
@@ -297,9 +299,9 @@ float dirichlet_logprob(float theta[], float alpha[], int n) {
 }
 
 void test() {
-	srand(time(NULL));
-	printf("%f\n", randomC());	
-	printf("%f\n", randomL());
-	printf("%f\n", flip(0.5));	
+    srand(time(NULL));
+    printf("%f\n", randomC());
+    printf("%f\n", randomL());
+    printf("%f\n", flip(0.5));
 }
 

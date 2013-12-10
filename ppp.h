@@ -9,81 +9,81 @@
 
 /************************************** Data Structures of the Distribution ******************************************/
 
-#define DRAW 1
-#define COMPU 2
-
-#define IF 1
-#define PLUS 2
+enum {
+    DRAW = 1,
+    COMPU = 2
+};
 
 enum {
-	FLIP, LOG_FLIP,
-	MULTINOMIAL,
-	UNIFORM,        
-	UNIFORM_DISCRETE,      
-	GAUSSIAN,
-	GAMMA,
-	BETA,
-	BINOMIAL,
-	POISSON,
-	DIRICHLET,
-	CONST,
+    IF = 1,
+    PLUS = 2
+};
+
+enum {
+    FLIP, LOG_FLIP,
+    MULTINOMIAL,
+    UNIFORM,
+    UNIFORM_DISCRETE,
+    GAUSSIAN,
+    GAMMA,
+    BETA,
+    BINOMIAL,
+    POISSON,
+    DIRICHLET,
+    CONST,
     DISTR_TYPE_LIMIT
 } type;
 
 
 struct BNVertex {
-  int type;      // draw or compute
-  float sample;  // last sampled value
+    int type;      // draw or compute
+    float sample;  // last sampled value
 };
- 
+
 struct BNVertexDraw {
-  struct BNVertex super;  // extends BNVertex
-  int type;               // dbern, dnorm, dgamma, or constant
+    struct BNVertex super;  // extends BNVertex
+    int type;               // dbern, dnorm, dgamma, or constant
 };
 
 struct BNVertexDrawBern {
-  struct BNVertexDraw super;
-  float p;
+    struct BNVertexDraw super;
+    float p;
 };
- 
+
 struct BNVertexDrawNorm {
-  struct BNVertexDraw super;
-  float mean;
-  float variance;
+    struct BNVertexDraw super;
+    float mean;
+    float variance;
 };
 
 struct BNVertexDrawGamma {
-  struct BNVertexDraw super;
-  float a;
-  float b;
+    struct BNVertexDraw super;
+    float a;
+    float b;
 };
- 
+
 struct BNVertexDrawConst {
-  struct BNVertexDraw super;
-  float c;
+    struct BNVertexDraw super;
+    float c;
 };
- 
+
 struct BNVertexCompute {
-  struct BNVertex super;  // extends BNVertex
-  int type;               // + or if
+    struct BNVertex super;  // extends BNVertex
+    int type;               // + or if
 };
- 
+
 struct BNVertexComputePlus {
-  struct BNVertexCompute super;
-  struct BNVertex* left;
-  struct BNVertex* right;
+    struct BNVertexCompute super;
+    struct BNVertex* left;
+    struct BNVertex* right;
 };
- 
+
 struct BNVertexComputeIf {
-  struct BNVertexCompute super;
-  struct BNVertex* condition;
-  struct BNVertex* consequent;
-  struct BNVertex* alternative;
+    struct BNVertexCompute super;
+    struct BNVertex* condition;
+    struct BNVertex* consequent;
+    struct BNVertex* alternative;
 };
-
-typedef int (*vertices_handler)(int n, struct BNVertex* vertices[]);
-typedef int (*inference_engine)(int n, struct BNVertex* vertices[], vertices_handler accept, vertices_handler add_trace);
-
 
 /************************************** Sample Functions ******************************************/
 
@@ -115,5 +115,13 @@ float poisson_logprob(float k, int mu);
 float* dirichlet(float alpha[], int n);
 float dirchlet_lgoprob(float theta[], float alpha[]);
 
+/************************************** Inference Functions ******************************************/
+
+typedef int (*vertices_handler)(int n, struct BNVertex* vertices[]);
+typedef int (*inference_engine)(int n, struct BNVertex* vertices[], vertices_handler accept, vertices_handler add_trace);
+
+int rejection_sampling(int n, struct BNVertex* vertices[], vertices_handler accept, vertices_handler add_trace);
+
+int print_vertices(int n, struct BNVertex* vertices[]);
 
 #endif
