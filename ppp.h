@@ -67,15 +67,76 @@ struct BNVertexDrawConst {
     float c;
 };
 
+
+struct BNVertexDrawBinomial {
+	struct BNVertexDraw super;
+	float p;
+        int n;
+};
+
+struct BNVertexDrawMultinomial {
+        struct BNVertexDraw super;
+        float* theta;
+        int n;
+};
+
+struct BNVertexDrawUniform {
+        struct BNVertexDraw super;
+        float low;
+        float high;
+};
+
+struct BNVertexDrawUniformDiscrete {
+        struct BNVertexDraw super;
+        int low;
+        int high;
+};
+
+struct BNVertexDrawBeta {
+        struct BNVertexDraw super;
+        float a;
+        float b;
+};
+
+struct BNVertexDrawPoisson {
+        struct BNVertexDraw super;
+        int mu;
+};
+
+struct BNVertexDrawDrichlet {
+        struct BNVertexDraw super;
+        float* alpha;
+        int n;
+};
+
 struct BNVertexCompute {
     struct BNVertex super;  // extends BNVertex
     int type;               // + or if
 };
 
+
 struct BNVertexComputePlus {
     struct BNVertexCompute super;
     struct BNVertex* left;
     struct BNVertex* right;
+};
+
+struct BNVertexComputeSubstract {
+        struct BNVertexCompute super;
+        struct BNVertex* left;
+        struct BNVertex* right;
+};
+
+struct BNVertexComputeMultiply {
+        struct BNVertexCompute super;
+        struct BNVertex* left;
+        struct BNVertex* right;
+};
+
+struct BNVertexComputeDivide {
+        struct BNVertexCompute super;
+        struct BNVertex* left;
+        struct BNVertex* right;
 };
 
 struct BNVertexComputeIf {
